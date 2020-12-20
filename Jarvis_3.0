@@ -1,0 +1,404 @@
+import subprocess
+import wolframalpha
+import pyttsx3
+import tkinter
+import json
+import random
+import operator
+import speech_recognition as sr
+import datetime
+import wikipedia
+import webbrowser
+import os
+import winshell
+import pyjokes
+import feedparser
+import smtplib
+import ctypes
+import time
+import requests
+import shutil
+from pynput.keyboard import Controller, Key
+from twilio.rest import Client
+from clint.textui import progress
+from bs4 import BeautifulSoup
+import win32com.client as wincl
+from urllib.request import urlopen
+
+engine = pyttsx3.init('sapi5')
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[1].id)
+
+keyboard = Controller()
+isStarted = False
+
+# WAKE = "Jarvis"
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+ 
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour>= 0 and hour<12:
+        speak("Good Morning Master !")
+  
+    elif hour>= 12 and hour<18:
+        speak("Good Afternoon Master !")   
+  
+    else:
+        speak("Good Evening Master !")  
+  
+    assname =("Jarvis 3 point o")
+    speak("I am your Assistant")
+    speak(assname)
+     
+ 
+def usrname():
+    speak("Hello what should i call you")
+    uname = takeCommand()
+    speak(uname)
+    columns = shutil.get_terminal_size().columns
+     
+    print("#####################".center(columns))
+    print("Welcome Master".center(columns))
+    print(uname.center(columns))
+    print("#####################".center(columns))
+     
+    speak("How can i Help you, Master")
+ 
+def takeCommand():
+     
+    r = sr.Recognizer()
+     
+    with sr.Microphone() as source:
+         
+        print("Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+  
+    try:
+        print("Recognizing...")    
+        query = r.recognize_google(audio, language ='en-in')
+        print(f"User said: {query}\n")
+  
+    except Exception as e:
+        print(e)    
+        print("Unable to Recognize your voice.")  
+        return "None"
+     
+    return query
+
+if __name__ == '__main__':
+    clear = lambda: os.system('cls')
+     
+    # This Function will clean any
+    # command before execution of this python file
+    clear()
+    wishMe()
+    usrname()
+     
+    while True:
+        query = takeCommand().lower()
+#         text = takeCommand()
+#         if text.count(WAKE) > 0:
+#             speak("I am ready")
+#             text = takeCommand()
+#             for query in text:
+
+        if 'wikipedia' in query:                     #wikipedia
+            speak('Searching Wikipedia...')
+            query = query.replace("wikipedia", "")
+            results = wikipedia.summary(query, sentences = 3)
+            speak("According to Wikipedia")
+            print(results)
+            speak(results)
+
+        elif 'open youtube' in query:              #youtube
+            speak("What do you want to search")
+            search = takeCommand()
+            webbrowser.open("http://youtube.com/results?search_query="+search,new=2)
+
+        elif 'open google' in query:               #google
+            speak("What do you want to search")
+            search = takeCommand()
+            webbrowser.open("https://www.google.com/search?sxsrf=ALeKk00qBr8Go0sSiXi0qZ6HE-GAeNt9Iw%3A1607828436192&ei=1IPVX6qjC5qY4-EPntaIsAE&q="+search,new=2)
+
+
+        elif 'the time' in query:           #time
+            strTime = datetime.datetime.now().strftime("%I:%M:%S %p")    
+            speak(f"Sir, the time is {strTime}")
+            print(strTime)
+
+
+        #         elif 'email to gaurav' in query:
+        #             try:
+        #                 speak("What should I say?")
+        #                 content = takeCommand()
+        #                 to = "Receiver email address"   
+        #                 sendEmail(to, content)
+        #                 speak("Email has been sent !")
+        #             except Exception as e:
+        #                 print(e)
+        #                 speak("I am not able to send this email")
+
+        #         elif 'send a mail' in query:
+        #             try:
+        #                 speak("What should I say?")
+        #                 content = takeCommand()
+        #                 speak("whome should i send")
+        #                 to = input()    
+        #                 sendEmail(to, content)
+        #                 speak("Email has been sent !")
+        #             except Exception as e:
+        #                 print(e)
+        #                 speak("I am not able to send this email")
+
+        elif 'how are you' in query:
+            speak("I am fine, Thank you")
+            speak("How are you, Sir")
+
+        elif 'fine' in query or "good" in query:
+            speak("It's good to know that your fine")
+
+        elif "change my name to" in query:
+            query = query.replace("change my name to", "")
+            assname = query
+
+        elif "change name" in query:
+            speak("What would you like to call me, Sir ")
+            assname = takeCommand()
+            speak("Thanks for naming me")
+
+        elif "what's your name" in query or "What is your name" in query:
+            speak("My friends call me")
+            speak("Jarvis")
+            print("My friends call me Jarvis")
+
+        elif "who made you" in query or "who created you" in query: 
+            speak("I have been created by Aryan.")
+
+        elif 'joke' in query:
+            speak(pyjokes.get_joke())
+
+        elif "calculate" in query:    #calculator
+
+            app_id = "8UQLEJ-JL5UVH6897"
+            client = wolframalpha.Client(app_id)
+            indx = query.lower().split().index('calculate') 
+            query = query.split()[indx + 1:] 
+            res = client.query(' '.join(query)) 
+            answer = next(res.results).text
+            print("The answer is " + answer) 
+            speak("The answer is " + answer) 
+
+
+
+        elif "who i am" in query:
+            speak("If you talk then definately your human.")
+
+        elif "why you came to world" in query:
+            speak("Thanks to Aryan. further It's a secret")
+
+
+        elif 'is love' in query:
+            speak("It is 7th sense that destroy all other senses")
+
+        elif "who are you" in query:
+            speak("I am your virtual assistant created by Aryan")
+
+        elif 'reason for you' in query:
+            speak("I was created as a Minor project by Mister Aryan ")
+
+        elif 'change background' in query:
+            ctypes.windll.user32.SystemParametersInfoW(20, 
+                                                        0, 
+                                                         "Location of wallpaper",
+                                                         0)
+            speak("Background changed succesfully")
+
+
+        elif 'lock window' in query:
+                speak("locking the device")
+                ctypes.windll.user32.LockWorkStation()
+
+        elif 'shutdown system' in query:
+                speak("Hold On a Sec ! Your system is on its way to shut down")
+                subprocess.call('shutdown / p /f')
+
+        elif 'empty recycle bin' in query:
+            winshell.recycle_bin().empty(confirm = False, show_progress = False, sound = True)
+            speak("Recycle Bin Recycled")
+
+        elif "don't listen" in query or "stop listening" in query:
+            speak("for how much time you want to stop jarvis from listening commands")
+            a = int(takeCommand())
+            time.sleep(a)
+            print(a)
+
+        elif "where is" in query:
+            query = query.replace("where is", "")
+            location = query
+            speak("User asked to Locate")
+            speak(location)
+            webbrowser.open("https://www.google.nl/maps/place/" + location + "")
+
+
+        elif "restart" in query:
+            subprocess.call(["shutdown", "/r"])
+
+        elif "hibernate" in query or "sleep" in query:
+            speak("Hibernating")
+            subprocess.call("shutdown / h")
+
+        elif "log off" in query or "sign out" in query:
+            speak("Make sure all the application are closed before sign-out")
+            time.sleep(5)
+            subprocess.call(["shutdown", "/l"])
+
+        elif "write a note" in query:
+            speak("What should i write, sir")
+            note = takeCommand()
+            file = open('jarvis.txt', 'w')
+            speak("Sir, Should i include date and time")
+            snfm = takeCommand()
+            if 'yes' in snfm or 'sure' in snfm:
+                strTime = datetime.datetime.now().strftime("%I:%M:%S %p")
+                file.write(strTime)
+                file.write(" :- ")
+                file.write(note)
+            else:
+                file.write(note)
+
+        elif "show note" in query:
+            speak("Showing Notes")
+            file = open("jarvis.txt", "r") 
+            print(file.read())
+            speak(file.read(6))
+
+        elif "update assistant" in query:
+            speak("After downloading file please replace this file with the downloaded one")
+            url = '# url after uploading file'
+            r = requests.get(url, stream = True)
+
+            with open("Voice.py", "wb") as Pypdf:
+
+                total_length = int(r.headers.get('content-length'))
+
+                for ch in progress.bar(r.iter_content(chunk_size = 2391975),
+                                               expected_size =(total_length / 1024) + 1):
+                    if ch:
+                        Pypdf.write(ch)
+
+                # NPPR9-FWDCX-D2C8J-H872K-2YT43
+        elif "jarvis" in query:
+
+            wishMe()
+            speak("Jarvis 3 point o in your service Master")
+            speak("what can i do for you")
+
+        elif "weather" in query:
+
+                    # Google Open weather website
+                    # to get API of Open weather 
+            api_key = "18fea4a3a27c3462ac641b7eb242b635"
+        #             base_url = "https://api.openweathermap.org/data/2.5/weather?"
+            speak(" City name ")
+            print("City name : ")
+            location = takeCommand()
+            complete_url = "https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid="+api_key
+            response = requests.get(complete_url) 
+            api_data = response.json() 
+
+            if api_data["cod"] != "404": 
+                temp_city = ((api_data['main']['temp']) - 273.15)
+                weather_desc = api_data['weather'][0]['description']
+                hmdt = api_data['main']['humidity']
+                wind_spd = api_data['wind']['speed']
+                date_time = datetime.datetime.now().strftime("%d %b %Y | %I:%M:%S %p")
+
+                print ("-------------------------------------------------------------")
+                print ("Weather Stats for - {}  || {}".format(location.upper(), date_time))
+                print ("-------------------------------------------------------------")
+
+                print ("Current temperature is: {:.2f} deg C".format(temp_city))
+                speak("Current temperature is: {:.2f} deg C".format(temp_city))
+                print ("Current weather desc  :",weather_desc)
+                speak("Current weather desc  :")
+                speak(weather_desc)
+                print ("Current Humidity      :",hmdt, '%')
+                speak("Current Humidity      :")
+                speak(hmdt)
+                speak("percent")
+                print ("Current wind speed    :",wind_spd ,'kmph')
+                speak("Current wind speed    :")
+                speak(wind_spd)
+                speak("kilometer per hour")
+
+
+            else: 
+                speak(" City Not Found ")
+
+        elif "Good Morning" in query:
+            speak("A warm" +query)
+            speak("How are you Mister")
+            speak(assname)
+
+                # most asked question from google Assistant
+        elif "will you be my gf" in query or "will you be my bf" in query:   
+            speak("I'm not sure about, may be you should give me some time")
+
+        elif "how are you" in query:
+            speak("I'm fine, glad you me that")
+
+        elif "i love you" in query:
+            speak("It's hard to understand")
+
+        elif "what is" in query or "who is" in query:
+
+                    # Use the same API key 
+                    # that we have generated earlier
+            client = wolframalpha.Client("8UQLEJ-JL5UVH6897") #api key
+            res = client.query(query)
+            answer = next(res.results).text 
+            print(answer)
+
+            try:
+                print (next(res.results).text)
+                speak (next(res.results).text)
+            except StopIteration:
+                print ("No results")
+        elif "open zoom" in query or "zoom" in query:
+            lst = [["https://us04web.zoom.us/j/5889579817?pwd=WDlqQjY5R1NGV05WMHF2VUxHY0EwQT09", "17:24", "17:30"],["link2", "2:31", "3:00"],["link3", "3:01", "3:30"]]
+            speak("OK opening zoom")
+            for i in lst:
+                while True:
+                    if isStarted == False:
+                        if datetime.datetime.now().hour == int(i[1].split(':')[0]) and datetime.datetime.now().minute == int(i[1].split(':')[1]):
+                            webbrowser.open(i[0],new=2)
+                            isStarted = True
+                    elif isStarted == True:
+                        if datetime.datetime.now().hour == int(i[2].split(':')[0]) and datetime.datetime.now().minute == int(i[2].split(':')[1]):
+                            keyboard.press('w')
+                            time.sleep(1)
+                            keyboard.press(Key.enter)
+                            isStarted = False
+        elif "open google meet" in query or "google meet" in query:
+            lst = [["https://meet.google.com/cdb-bgnw-vqd", "17:29", "17:30"],["link2", "2:31", "3:00"],["link3", "3:01", "3:30"]]
+            speak("OK opening meet")
+            for i in lst:
+                while True:
+                    if isStarted == False:
+                        if datetime.datetime.now().hour == int(i[1].split(':')[0]) and datetime.datetime.now().minute == int(i[1].split(':')[1]):
+                            webbrowser.open(i[0],new=2)
+                            isStarted = True
+                    elif isStarted == True:
+                        if datetime.datetime.now().hour == int(i[2].split(':')[0]) and datetime.datetime.now().minute == int(i[2].split(':')[1]):
+                            keyboard.press('w')
+                            time.sleep(1)
+                            keyboard.press(Key.enter)
+                            isStarted = False
+
+        elif 'exit' in query or 'see you later' in query :
+            speak("Thanks for giving me your time")
+            exit()
+            break
